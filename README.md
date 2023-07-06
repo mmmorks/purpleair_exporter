@@ -1,4 +1,4 @@
-# `purpleair_exporter`
+# `purpleair_exporter` [![source](https://img.shields.io/badge/source-gray?logo=github)](https://github.com/willglynn/purpleair_exporter)
 
 This is a Prometheus/OpenMetrics exporter for [PurpleAir air quality sensors](https://www.purpleair.com).
 
@@ -8,11 +8,31 @@ strategy is similar to the [SNMP exporter](https://github.com/prometheus/snmp_ex
 Prometheus-to-PurpleAir proxy. One instance of this exporter can easily support multiple sensors even on a
 resource-constrained host.
 
+## Quickstart
+
+Container images are available at [Docker Hub](https://hub.docker.com/r/willglynn/purpleair_exporter) and [GitHub 
+container registry](https://github.com/willglynn/purpleair_exporter/pkgs/container/purpleair_exporter). 
+
+```shell
+$ docker run -it --rm -p 2020:2020 willglynn/purpleair_exporter
+# or
+$ docker run -it --rm -p 2020:2020 ghcr.io/willglynn/purpleair_exporter
+level=info msg="Starting HTTP server" addr=:2020
+```
+
+Once it's running, fetch
+[http://localhost:2020/purpleair?target=0.0.0.0](http://localhost:2020/purpleair?target=0.0.0.0), replacing `0.0.0.0`
+with the IP address of the sensor on your LAN.
+
+## Prometheus configuration
+
+Scrape one or more sensor target(s) via an instance of `purpleair_exporter`:
+
 ```yaml
 scrape_configs:
   - job_name: 'purpleair'
     metrics_path: /purpleair
-    scrape_interval: 1s    # if you dare
+    scrape_interval: 10s    # 1s if you dare
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -27,7 +47,7 @@ scrape_configs:
           - 172.16.4.42
 ```
 
-## Configuration
+## Exporter configuration
 
 Minimal, via environment variables:
 
