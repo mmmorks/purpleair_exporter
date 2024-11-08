@@ -99,9 +99,9 @@ func (s Scraper) get(ctx context.Context, path string, period string, includeDev
 		Httpsends           int     `json:"httpsends"`
 		Hardwareversion     string  `json:"hardwareversion"`
 		Hardwarediscovered  string  `json:"hardwarediscovered"`
-		CurrentTempF        int     `json:"current_temp_f"`
-		CurrentHumidity     int     `json:"current_humidity"`
-		CurrentDewpointF    int     `json:"current_dewpoint_f"`
+		CurrentTempF        float64 `json:"current_temp_f"`
+		CurrentHumidity     float64    `json:"current_humidity"`
+		CurrentDewpointF    float64    `json:"current_dewpoint_f"`
 		Pressure            float64 `json:"pressure"`
 		CurrentTempF680     float64 `json:"current_temp_f_680"`
 		CurrentHumidity680  float64 `json:"current_humidity_680"`
@@ -179,11 +179,10 @@ func (s Scraper) get(ctx context.Context, path string, period string, includeDev
 		tx(prometheus.MustNewConstMetric(httpSendsDesc, prometheus.CounterValue, float64(data.Httpsuccess), data.SensorID, "success"))
 		tx(prometheus.MustNewConstMetric(httpSendsDesc, prometheus.CounterValue, float64(data.Httpsends-data.Httpsuccess), data.SensorID, "failure"))
 
-		tx(prometheus.MustNewConstMetric(temperatureDesc, prometheus.GaugeValue, ftoc(data.CurrentTempF680), data.SensorID))
-		tx(prometheus.MustNewConstMetric(humidityDesc, prometheus.GaugeValue, data.CurrentHumidity680, data.SensorID))
-		tx(prometheus.MustNewConstMetric(dewPointDesc, prometheus.GaugeValue, ftoc(data.CurrentDewpointF680), data.SensorID))
-		tx(prometheus.MustNewConstMetric(iaqDesc, prometheus.GaugeValue, data.Gas680, data.SensorID))
-		tx(prometheus.MustNewConstMetric(pressureDesc, prometheus.GaugeValue, data.Pressure680*100, data.SensorID))
+		tx(prometheus.MustNewConstMetric(temperatureDesc, prometheus.GaugeValue, ftoc(data.CurrentTempF), data.SensorID))
+		tx(prometheus.MustNewConstMetric(humidityDesc, prometheus.GaugeValue, data.CurrentHumidity, data.SensorID))
+		tx(prometheus.MustNewConstMetric(dewPointDesc, prometheus.GaugeValue, ftoc(data.CurrentDewpointF), data.SensorID))
+		tx(prometheus.MustNewConstMetric(pressureDesc, prometheus.GaugeValue, data.Pressure*100, data.SensorID))
 	}
 
 	tx(prometheus.MustNewConstMetric(pm25AqiDesc, prometheus.GaugeValue, data.Pm25Aqi, data.SensorID, "A", period))
